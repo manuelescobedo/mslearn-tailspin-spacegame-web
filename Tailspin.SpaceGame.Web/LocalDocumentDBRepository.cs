@@ -7,23 +7,19 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TailSpin.SpaceGame.Web.Models;
 
-namespace TailSpin.SpaceGame.Web
-{
-    public class LocalDocumentDBRepository<T> : IDocumentDBRepository<T> where T : Model
-    {
+namespace TailSpin.SpaceGame.Web {
+    public class LocalDocumentDBRepository<T> : IDocumentDBRepository<T> where T : Model {
         // An in-memory list of all items in the collection.
         private readonly List<T> _items;
 
-        public LocalDocumentDBRepository(string fileName)
-        {
+        public LocalDocumentDBRepository (string fileName) {
             // Serialize the items from the provided JSON document.
-            _items = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(fileName));
+            _items = JsonConvert.DeserializeObject<List<T>> (File.ReadAllText (fileName));
         }
 
-        public LocalDocumentDBRepository(Stream stream)
-        {
+        public LocalDocumentDBRepository (Stream stream) {
             // Serialize the items from the provided JSON document.
-            _items = JsonConvert.DeserializeObject<List<T>>(new StreamReader(stream).ReadToEnd());
+            _items = JsonConvert.DeserializeObject<List<T>> (new StreamReader (stream).ReadToEnd ());
         }
 
         /// <summary>
@@ -34,9 +30,8 @@ namespace TailSpin.SpaceGame.Web
         /// The task result contains the retrieved item.
         /// </returns>
         /// <param name="id">The identifier of the item to retrieve.</param>
-        public Task<T> GetItemAsync(string id)
-        {
-            return Task<T>.FromResult(_items.Single(item => item.Id == id));
+        public Task<T> GetItemAsync (string id) {
+            return Task<T>.FromResult (_items.Single (item => item.Id == id));
         }
 
         /// <summary>
@@ -51,20 +46,19 @@ namespace TailSpin.SpaceGame.Web
         /// <param name="orderDescendingPredicate">Predicate that specifies how to sort the results in descending order.</param>
         /// <param name="page">The 1-based page of results to return.</param>
         /// <param name="pageSize">The number of items on a page.</param>
-        public Task<IEnumerable<T>> GetItemsAsync(
+        public Task<IEnumerable<T>> GetItemsAsync (
             Expression<Func<T, bool>> queryPredicate,
             Expression<Func<T, int>> orderDescendingPredicate,
             int page = 1, int pageSize = 10
-        )
-        {
-            var result = _items.AsQueryable()
-                .Where(queryPredicate) // filter
-                .OrderByDescending(orderDescendingPredicate) // sort
-                .Skip(page * pageSize) // find page
-                .Take(pageSize - 1) // take items
-                .AsEnumerable(); // make enumeratable
+        ) {
+            var result = _items.AsQueryable ()
+                .Where (queryPredicate) // filter
+                .OrderByDescending (orderDescendingPredicate) // sort
+                .Skip (page * pageSize) // find page
+                .Take (pageSize) // take items
+                .AsEnumerable (); // make enumeratable
 
-            return Task<IEnumerable<T>>.FromResult(result);
+            return Task<IEnumerable<T>>.FromResult (result);
         }
 
         /// <summary>
@@ -75,13 +69,12 @@ namespace TailSpin.SpaceGame.Web
         /// The task result contains the number of items that match the query predicate.
         /// </returns>
         /// <param name="queryPredicate">Predicate that specifies which items to select.</param>
-        public Task<int> CountItemsAsync(Expression<Func<T, bool>> queryPredicate)
-        {
-            var count = _items.AsQueryable()
-                .Where(queryPredicate) // filter
-                .Count(); // count
+        public Task<int> CountItemsAsync (Expression<Func<T, bool>> queryPredicate) {
+            var count = _items.AsQueryable ()
+                .Where (queryPredicate) // filter
+                .Count (); // count
 
-            return Task<int>.FromResult(count);
+            return Task<int>.FromResult (count);
         }
     }
 }
